@@ -1,0 +1,73 @@
+from collections import deque, defaultdict, Counter
+from typing import List, Tuple, Optional, Dict, Set
+import heapq
+
+map = {} # 
+# temp map that overrides original map
+tmpMaps = [] # list of tmp maps (in order from oldest to most recent)
+# [transaction 1, nested transaction 2]
+# commit
+# nested trans 2
+# override transaction 1 with all the parings of t2
+# tmpMaps = [transaction 1]
+# possible to roll back
+
+# map; a -> 1
+# tmpMaps = [also doesn't have a mapping, doesn't have any a mapping]
+
+def get(key):
+    if tmpMaps:
+        for i in range(len(tmpMaps) - 1, -1 , -1):
+            if key in tmpMaps[i]:
+                return tmpMaps[i][key]
+    else:
+        return map[key]
+
+
+def set(key, value):
+    if tmpMaps:
+        tmpMaps[-1][key] = value
+    else:
+        map[key] = value
+    
+def begin():
+    tmpMaps.append({})
+
+    
+def commit():
+    mapToCommit = tmpMaps.pop()
+    
+    if tmpMaps:
+        toMerge = tmpMaps[-1]
+    else:
+        toMerge = map
+
+    for k, v in mapToCommit.items():
+        toMerge[k] = v
+
+        
+def rollback():
+    if not tmpMaps:
+        print('Error!')
+        return
+    tmpMaps.pop()
+
+print(set('a', 1))
+print(begin())
+print(set('a', 2))
+print(begin())
+print(set('a',3))
+print(get('a'))
+print(commit())
+print(get('a'))
+print(rollback())
+print(get('a'))
+
+    
+
+
+
+
+
+
+
