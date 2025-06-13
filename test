@@ -20,8 +20,7 @@ def get(key):
         for i in range(len(tmpMaps) - 1, -1 , -1):
             if key in tmpMaps[i]:
                 return tmpMaps[i][key]
-    else:
-        return map[key]
+    return map.get(key)
 
 
 def set(key, value):
@@ -35,6 +34,9 @@ def begin():
 
     
 def commit():
+    if not tmpMaps:
+        print("ERROR")
+        return 
     mapToCommit = tmpMaps.pop()
     
     if tmpMaps:
@@ -48,20 +50,62 @@ def commit():
         
 def rollback():
     if not tmpMaps:
-        print('Error!')
+        print('ERROR')
         return
     tmpMaps.pop()
 
-print(set('a', 1))
-print(begin())
-print(set('a', 2))
-print(begin())
-print(set('a',3))
-print(get('a'))
-print(commit())
-print(get('a'))
-print(rollback())
-print(get('a'))
+
+""" # Test 1
+print(get('A'))      # Expected: None
+set('A', 1)
+print(get('A'))      # Expected: 1
+ """
+
+
+
+""" # Test 2
+print(get('A'))      # Expected: None
+set('A', 1)
+set('A', 2)
+print(get('A'))      # Expected: 2 """
+
+
+""" # Test 3
+rollback()           # Expected: ERROR (since no transaction has begun)
+ """
+
+
+
+""" # Test 4
+commit()  # Expected: ERROR (since no transaction has begun)
+    """
+
+
+""" # Test 5
+set('A', 1)
+begin()
+print(get('A'))      # Expected: 1
+set('A', 2)
+commit()
+print(get('A'))      # Expected: 2
+ """
+
+
+
+""" # Test 6
+set('A', 1)
+begin()
+set('A', 2)
+begin()
+set('A', 3)
+print(get('A'))  # Expected: 3
+commit()
+print(get('A'))  # Excpected: 3
+rollback()
+print(get('A'))  # Expected: 1
+
+ """
+
 
     
 
